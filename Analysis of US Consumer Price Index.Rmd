@@ -1,0 +1,183 @@
+---
+title: "Analysis of US Consumer Price Index"
+author: "Mehedi Hasan Jim"
+date: "2025-07-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache =  TRUE)
+```
+
+<style> body {text-align:justify;  font-family: "Georgia";}
+#header{text-align: center}
+.r{background-color: #caf0f8;}
+</style>
+<br>
+<br>
+
+We will use the US Consumer Price Index (CPI) data set from the *tseries* package.
+
+The data set is part of *NelPlo data.*
+
+```{r cars}
+data(NelPlo, package = "tseries")
+head(cpi)
+cpi <- ts(cpi,start = 1860, end = 1988)
+```
+
+
+
+
+## Test and Training Set
+
+To understand which forecasting method performs the best it's necessary to evaluate them based on training and testing data. We take the last 8 years for testing data.
+
+
+```{r}
+library(tidyverse)
+library(tseries)
+library(forecast)
+library(urca)
+cpi <- ts(cpi,start = 1860, end = 1988)
+cpi.train <- window(cpi, end = 1980)
+cpi.test <- window(cpi, start = 1981)
+head(cpi.test)
+```
+
+
+## ploting the data
+
+It's essential to plot the data to understand it. Plotting the data will help to get idear about the nature of the data and the potential models that can be applied.
+
+```{r}
+autoplot(cpi.train, linewidth = 1)+
+  labs(tittle = "Consumer Price Index: Training Data",
+       y= "",
+       caption = "Source: C. R. Nelson and C. I. Plosser (1982),\n Trends and Random Walks in Macroeconomic Time Series. \n Journal of Monetary Economics, 10, 139–162.\n doi:10.1016/0304-3932(82)90012-5.")+
+  scale_x_continuous(breaks= c(1860, 1900, 1950, 1988))+
+  theme_classic()+
+  theme(text = element_text(size = 20, family = "serif"),
+        plot.caption = element_text(size = 7))
+```
+
+
+
+Let's take first difference of the data to see whether the trend/ drift goes away or not.
+
+
+```{r}
+
+autoplot(diff(cpi.train,2), linewidth = 1)+
+  labs(title= expression(Delta^2 * "Consumer Price Index"), y = "",
+                 caption = "Source: C. R. Nelson and C. I. Plosser (1982),\n Trends and Random Walks in Macroeconomic Time Series. \n Journal of Monetary Economics, 10, 139–162.\n doi:10.1016/0304-3932(82)90012-5.")+
+  scale_x_continuous(breaks= c(1860, 1900, 1950, 1988))+
+  theme_classic()+
+  theme(text = element_text(size = 20, family = "serif"),
+        plot.caption = element_text(size = 7))
+```
+
+
+Seems like differencing is making it trend stationary. Need to ensure wheater the variable at level and/or variable at first difference has unit root or not.
+Note: A series with unit root has time variant mean and/or variance.
+
+Now let's explore the unit root, ACF and PACF to understand what will be the potential values of p,d and q in the *ARIMA* model
+
+```{r}
+urca::ur.df(cpi.train,type = "drift") |>summary() # alternative tests are kpss, ers, pp, sp, za tests from the urca package
+
+```
+
+The unit root test (Null: The series has unit root.) shows that CPI has unit root at level.
+
+```{r}
+urca::ur.df(diff(cpi.train),type = "drift") |>summary() 
+
+```
+
+
+The test result shows that the first differnce series dos not have unit root.
+
+
+```{r}
+Acf(diff(cpi.train))
+
+```
+
+
+
+```{r}
+Pacf(diff(cpi.train))
+
+```
+
+Seems like ARIMA(2,1,2) can be a good choice with two significant spikes in each of the plots. Let's see what does *auto.arima()* say.
+
+```{r}
+
+cpi.fit.auto.arima <- auto.arima(cpi.train, seasonal = F)
+
+```
+## forecast using auto.arima
+
+```{r}
+forecast.auto.arima <- cpi.fit.auto.arima%>% forecast(h = 8)
+autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
+  autolayer(forecast.auto.arima, PI =F, color = "darkred", size = 1, series = "Arima Prediction")+
+  theme_classic()
+
+```
+
+
+Notice that the forecasted values are very close to the real values. Remember that the last 8 years were not used in training. Seems a good fit. Let's evaluate the fit.
+
+## ARIMA fit Evaluation
+
+```{r}
+
+accuracy(forecast.auto.arima, cpi.test) %>% round(3)
+
+```
+
+
+NOt a bad result. Let's fit some other models and compare them.
+
+
+
+## Holt's Exponential Smoothing
+
+Since no seasonality is possible for the data under study, we will use a simple Holt's model.
+
+
+```{r}
+
+cpi.fit.holt <- holt(cpi.train, h = 10)
+accuracy(cpi.fit.holt, cpi.test) %>% round(3)
+
+```
+
+
+```{r}
+forecast.holt <- forecast(cpi.fit.holt,h = 8)
+autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
+  autolayer(forecast.auto.arima, PI =F, color = "darkred", size = 1, series = "Arima Prediction")+
+  autolayer(forecast.holt, size= 1, color = "blue", PI = F)+
+  theme_classic()
+```
+Let's get to the damped Holt's model
+
+```{r}
+cpi.fit.holt.damped <- holt(cpi.train, h = 10,damped = T)
+accuracy(cpi.fit.holt.damped, cpi.test) %>% round(3)
+
+forecast.holt.damped <- forecast(cpi.fit.holt,h = 8)
+autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
+  autolayer(forecast.auto.arima, PI =F, color = "darkred", size = 1, series = "Arima Prediction")+
+  autolayer(forecast.holt, size= 1, color = "blue", PI = F)+
+  autolayer(forecast.holt.damped, size= 1, linetype = 3, color = "purple", PI = F)+
+  theme_classic()
+```
+
+
+
+
