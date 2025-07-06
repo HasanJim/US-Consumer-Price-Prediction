@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache =  TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 <style> body {text-align:justify;  font-family: "Georgia";}
