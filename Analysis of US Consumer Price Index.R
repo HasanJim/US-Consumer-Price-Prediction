@@ -205,8 +205,3 @@ diff(cpi) %>% ur.df() %>% summary()
 diff(cpi) %>% ur.df() %>% summary()
 diff(cpi) %>% ur.kpss(type = "tau") %>% summary()
 
-# git rm --cached Analysis of US Consumer Price Index.R
-
-rmarkdown::render("Analysis of US Consumer Price Index.rmd", 
-                  output_format = "md_document",
-                  output_file = "README.md")
