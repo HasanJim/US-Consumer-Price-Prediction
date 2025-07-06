@@ -182,6 +182,7 @@ autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
 The damped model predicted the same as the usual model. So far the ARIMA seems a better fit. 
 Note: we could use the ets() function here.
 
+This line is a trial commit.
 
 ```{r}
 
