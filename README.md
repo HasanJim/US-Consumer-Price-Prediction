@@ -40,7 +40,8 @@ years for testing data.
     ## Start = 1981 
     ## End = 1986 
     ## Frequency = 1 
-    ## [1] 5.607122 5.666905 5.698524 5.740791 5.775783 5.794200
+    ## [1] 5.607122 5.666905 5.698524 5.740791
+    ## [5] 5.775783 5.794200
 
 ## ploting the data
 
@@ -58,9 +59,10 @@ that can be applied.
             plot.caption = element_text(size = 7))
 
     ## Scale for x is already present.
-    ## Adding another scale for x, which will replace the existing scale.
+    ## Adding another scale for x, which will
+    ## replace the existing scale.
 
-![](README_files/figure-markdown_strict/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
 Let’s take first difference of the data to see whether the trend/ drift
 goes away or not.
@@ -74,9 +76,10 @@ goes away or not.
             plot.caption = element_text(size = 7))
 
     ## Scale for x is already present.
-    ## Adding another scale for x, which will replace the existing scale.
+    ## Adding another scale for x, which will
+    ## replace the existing scale.
 
-![](README_files/figure-markdown_strict/unnamed-chunk-27-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
 Seems like differencing is making it trend stationary. Need to ensure
 wheater the variable at level and/or variable at first difference has
@@ -100,16 +103,24 @@ the potential values of p,d and q in the *ARIMA* model
     ## lm(formula = z.diff ~ z.lag.1 + 1 + z.diff.lag)
     ## 
     ## Residuals:
-    ##       Min        1Q    Median        3Q       Max 
-    ## -0.210887 -0.013672 -0.003596  0.014998  0.141449 
+    ##       Min        1Q    Median        3Q 
+    ## -0.210887 -0.013672 -0.003596  0.014998 
+    ##       Max 
+    ##  0.141449 
     ## 
     ## Coefficients:
-    ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) -0.018622   0.031539  -0.590    0.556    
-    ## z.lag.1      0.006902   0.008197   0.842    0.402    
-    ## z.diff.lag   0.601908   0.078320   7.685 5.38e-12 ***
+    ##              Estimate Std. Error
+    ## (Intercept) -0.018622   0.031539
+    ## z.lag.1      0.006902   0.008197
+    ## z.diff.lag   0.601908   0.078320
+    ##             t value Pr(>|t|)    
+    ## (Intercept)  -0.590    0.556    
+    ## z.lag.1       0.842    0.402    
+    ## z.diff.lag    7.685 5.38e-12 ***
     ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## Signif. codes:  
+    ##   0 '***' 0.001 '**' 0.01 '*' 0.05
+    ##   '.' 0.1 ' ' 1
     ## 
     ## Residual standard error: 0.04628 on 116 degrees of freedom
     ## Multiple R-squared:  0.3811, Adjusted R-squared:  0.3705 
@@ -140,16 +151,24 @@ unit root at level.
     ## lm(formula = z.diff ~ z.lag.1 + 1 + z.diff.lag)
     ## 
     ## Residuals:
-    ##       Min        1Q    Median        3Q       Max 
-    ## -0.200573 -0.014820 -0.000801  0.019576  0.119296 
+    ##       Min        1Q    Median        3Q 
+    ## -0.200573 -0.014820 -0.000801  0.019576 
+    ##       Max 
+    ##  0.119296 
     ## 
     ## Coefficients:
-    ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)  0.008329   0.004295   1.939   0.0549 .  
-    ## z.lag.1     -0.473913   0.079481  -5.963 2.79e-08 ***
-    ## z.diff.lag   0.253094   0.089841   2.817   0.0057 ** 
+    ##              Estimate Std. Error
+    ## (Intercept)  0.008329   0.004295
+    ## z.lag.1     -0.473913   0.079481
+    ## z.diff.lag   0.253094   0.089841
+    ##             t value Pr(>|t|)    
+    ## (Intercept)   1.939   0.0549 .  
+    ## z.lag.1      -5.963 2.79e-08 ***
+    ## z.diff.lag    2.817   0.0057 ** 
     ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## Signif. codes:  
+    ##   0 '***' 0.001 '**' 0.01 '*' 0.05
+    ##   '.' 0.1 ' ' 1
     ## 
     ## Residual standard error: 0.04422 on 115 degrees of freedom
     ## Multiple R-squared:  0.2362, Adjusted R-squared:  0.2229 
@@ -168,11 +187,11 @@ root.
 
     Acf(diff(cpi.train))
 
-![](README_files/figure-markdown_strict/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
     Pacf(diff(cpi.train))
 
-![](README_files/figure-markdown_strict/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 Seems like ARIMA(2,1,2) can be a good choice with two significant spikes
 in each of the plots. Let’s see what does *auto.arima()* say.
@@ -186,7 +205,7 @@ in each of the plots. Let’s see what does *auto.arima()* say.
       autolayer(forecast.auto.arima, PI =F, color = "darkred", size = 1, series = "Arima Prediction")+
       theme_classic()
 
-![](README_files/figure-markdown_strict/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
 Notice that the forecasted values are very close to the real values.
 Remember that the last 8 years were not used in training. Seems a good
@@ -196,9 +215,15 @@ fit. Let’s evaluate the fit.
 
     accuracy(forecast.auto.arima, cpi.test) %>% round(3)
 
-    ##                  ME  RMSE   MAE    MPE  MAPE  MASE   ACF1 Theil's U
-    ## Training set  0.002 0.044 0.028  0.046 0.724 0.696 -0.015        NA
-    ## Test set     -0.015 0.027 0.021 -0.260 0.366 0.537  0.680     0.728
+    ##                  ME  RMSE   MAE    MPE
+    ## Training set  0.002 0.044 0.028  0.046
+    ## Test set     -0.015 0.027 0.021 -0.260
+    ##               MAPE  MASE   ACF1
+    ## Training set 0.724 0.696 -0.015
+    ## Test set     0.366 0.537  0.680
+    ##              Theil's U
+    ## Training set        NA
+    ## Test set         0.728
 
 NOt a bad result. Let’s fit some other models and compare them.
 
@@ -210,9 +235,15 @@ simple Holt’s model.
     cpi.fit.holt <- holt(cpi.train, h = 10)
     accuracy(cpi.fit.holt, cpi.test) %>% round(3)
 
-    ##                  ME  RMSE  MAE    MPE  MAPE  MASE  ACF1 Theil's U
-    ## Training set  0.001 0.050 0.03  0.040 0.805 0.771 0.078        NA
-    ## Test set     -0.320 0.379 0.32 -5.521 5.521 8.089 0.642    10.149
+    ##                  ME  RMSE  MAE    MPE
+    ## Training set  0.001 0.050 0.03  0.040
+    ## Test set     -0.320 0.379 0.32 -5.521
+    ##               MAPE  MASE  ACF1
+    ## Training set 0.805 0.771 0.078
+    ## Test set     5.521 8.089 0.642
+    ##              Theil's U
+    ## Training set        NA
+    ## Test set        10.149
 
     forecast.holt <- forecast(cpi.fit.holt,h = 8)
     autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
@@ -220,15 +251,21 @@ simple Holt’s model.
       autolayer(forecast.holt, size= 1, color = "blue", PI = F)+
       theme_classic()
 
-![](README_files/figure-markdown_strict/unnamed-chunk-36-1.png) Let’s
+![](README_files/figure-markdown_strict/unnamed-chunk-12-1.png) Let’s
 get to the damped Holt’s model
 
     cpi.fit.holt.damped <- holt(cpi.train, h = 10,damped = T)
     accuracy(cpi.fit.holt.damped, cpi.test) %>% round(3)
 
-    ##                 ME  RMSE   MAE   MPE  MAPE  MASE  ACF1 Theil's U
-    ## Training set 0.005 0.050 0.032 0.105 0.841 0.813 0.239        NA
-    ## Test set     0.023 0.026 0.023 0.394 0.394 0.574 0.230     0.667
+    ##                 ME  RMSE   MAE   MPE
+    ## Training set 0.005 0.050 0.032 0.105
+    ## Test set     0.023 0.026 0.023 0.394
+    ##               MAPE  MASE  ACF1
+    ## Training set 0.841 0.813 0.239
+    ## Test set     0.394 0.574 0.230
+    ##              Theil's U
+    ## Training set        NA
+    ## Test set         0.667
 
     forecast.holt.damped <- forecast(cpi.fit.holt,h = 8)
     autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
@@ -237,4 +274,4 @@ get to the damped Holt’s model
       autolayer(forecast.holt.damped, size= 1, linetype = 3, color = "purple", PI = F)+
       theme_classic()
 
-![](README_files/figure-markdown_strict/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-13-1.png)
