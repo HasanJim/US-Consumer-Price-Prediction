@@ -2,19 +2,13 @@
 title: "Analysis of US Consumer Price Index"
 author: "Mehedi Hasan Jim"
 date: "2025-07-06"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-<style> body {text-align:justify;  font-family: "Georgia";}
-#header{text-align: center}
-.r{background-color: #caf0f8;}
-</style>
-<br>
-<br>
 
 We will use the US Consumer Price Index (CPI) data set from the *tseries* package.
 

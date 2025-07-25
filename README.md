@@ -1,10 +1,3 @@
-<style> body {text-align:justify;  font-family: "Georgia";}
-#header{text-align: center}
-.r{background-color: #caf0f8;}
-</style>
-
-<br> <br>
-
 We will use the US Consumer Price Index (CPI) data set from the
 *tseries* package.
 
@@ -28,42 +21,9 @@ to evaluate them based on training and testing data. We take the last 8
 years for testing data.
 
     library(tidyverse)
-
-    ## Warning: package 'purrr' was built under R version 4.4.2
-
-    ## Warning: package 'lubridate' was built under R version 4.4.3
-
-    ## ── Attaching core tidyverse packages ───────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-    ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.0.4     
-    ## ── Conflicts ─────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-
     library(tseries)
-
-    ## Warning: package 'tseries' was built under R version 4.4.3
-
-    ## 
-    ##     'tseries' version: 0.10-58
-    ## 
-    ##     'tseries' is a package for time series analysis and
-    ##     computational finance.
-    ## 
-    ##     See 'library(help="tseries")' for details.
-
     library(forecast)
-
-    ## Warning: package 'forecast' was built under R version 4.4.1
-
     library(urca)
-
-    ## Warning: package 'urca' was built under R version 4.4.1
-
     cpi <- ts(cpi,start = 1860, end = 1988)
     cpi.train <- window(cpi, end = 1980)
     cpi.test <- window(cpi, start = 1981)
@@ -90,9 +50,6 @@ that can be applied.
       theme(text = element_text(size = 20, family = "serif"),
             plot.caption = element_text(size = 7))
 
-    ## Scale for x is already present.
-    ## Adding another scale for x, which will replace the existing scale.
-
 ![](README_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
 Let’s take first difference of the data to see whether the trend/ drift
@@ -105,9 +62,6 @@ goes away or not.
       theme_classic()+
       theme(text = element_text(size = 20, family = "serif"),
             plot.caption = element_text(size = 7))
-
-    ## Scale for x is already present.
-    ## Adding another scale for x, which will replace the existing scale.
 
 ![](README_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
@@ -229,9 +183,12 @@ fit. Let’s evaluate the fit.
 
     accuracy(forecast.auto.arima, cpi.test) %>% round(3)
 
-    ##                  ME  RMSE   MAE    MPE  MAPE  MASE   ACF1 Theil's U
-    ## Training set  0.002 0.044 0.028  0.046 0.724 0.696 -0.015        NA
-    ## Test set     -0.015 0.027 0.021 -0.260 0.366 0.537  0.680     0.728
+    ##                  ME  RMSE   MAE    MPE  MAPE  MASE   ACF1
+    ## Training set  0.002 0.044 0.028  0.046 0.724 0.696 -0.015
+    ## Test set     -0.015 0.027 0.021 -0.260 0.366 0.537  0.680
+    ##              Theil's U
+    ## Training set        NA
+    ## Test set         0.728
 
 NOt a bad result. Let’s fit some other models and compare them.
 
@@ -243,9 +200,12 @@ simple Holt’s model.
     cpi.fit.holt <- holt(cpi.train, h = 10)
     accuracy(cpi.fit.holt, cpi.test) %>% round(3)
 
-    ##                  ME  RMSE  MAE    MPE  MAPE  MASE  ACF1 Theil's U
-    ## Training set  0.001 0.050 0.03  0.040 0.805 0.771 0.078        NA
-    ## Test set     -0.320 0.379 0.32 -5.521 5.521 8.089 0.642    10.149
+    ##                  ME  RMSE  MAE    MPE  MAPE  MASE  ACF1
+    ## Training set  0.001 0.050 0.03  0.040 0.805 0.771 0.078
+    ## Test set     -0.320 0.379 0.32 -5.521 5.521 8.089 0.642
+    ##              Theil's U
+    ## Training set        NA
+    ## Test set        10.149
 
     forecast.holt <- forecast(cpi.fit.holt,h = 8)
     autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
@@ -259,9 +219,12 @@ get to the damped Holt’s model
     cpi.fit.holt.damped <- holt(cpi.train, h = 10,damped = T)
     accuracy(cpi.fit.holt.damped, cpi.test) %>% round(3)
 
-    ##                 ME  RMSE   MAE   MPE  MAPE  MASE  ACF1 Theil's U
-    ## Training set 0.005 0.050 0.032 0.105 0.841 0.813 0.239        NA
-    ## Test set     0.023 0.026 0.023 0.394 0.394 0.574 0.230     0.667
+    ##                 ME  RMSE   MAE   MPE  MAPE  MASE  ACF1
+    ## Training set 0.005 0.050 0.032 0.105 0.841 0.813 0.239
+    ## Test set     0.023 0.026 0.023 0.394 0.394 0.574 0.230
+    ##              Theil's U
+    ## Training set        NA
+    ## Test set         0.667
 
     forecast.holt.damped <- forecast(cpi.fit.holt,h = 8)
     autoplot(cpi, color = "darkgreen", size =1, series = "CPI")+
